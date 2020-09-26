@@ -19,6 +19,7 @@ Dataloader for Test
 import tensorflow as tf
 import numpy as np
 from collections import namedtuple
+from os.path import isfile, join
 
 
 dataloader_parameters = namedtuple("dataloader_parameters", "height, width, task")
@@ -40,6 +41,13 @@ class GeneralDataloader(object):
         self.src_img_1_batch = None
         self.src_img_2_batch = None
         self.tgt_img_batch = None
+
+        # get number of samples
+        self.num_samples = 0
+        with open(self.filenames_file) as fin:
+            filename = fin.readline()
+            if isfile(join(self.datapath, filename)):
+                self.num_samples += 1
         self.build()
 
     def build(self):
