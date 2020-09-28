@@ -107,21 +107,20 @@ class Tester(general_tester.GeneralTester):
                 # break
         print("num_train_samples = {}".format(num_train_samples))
 
-        # TODO
-        # num_features
+        num_features = network.classes
 
         #parameters
         global_step = tf.Variable(0, name='global_step', trainable=False)
 
         # learning rate policy
-        decay_steps = int(num_train_samples / batch_size * num_epochs_per_decay)
+        decay_steps = int(num_train_samples / self.params.batchSize * self.params.epochs_per_decay)
 
-        config = tf.ConfigProto(allow_soft_placement=True)
-        sess = tf.Session(config=config)
-
-        self.prepare()
-        var_list = network.get_network_params()
-        saver = tf.train.Saver(var_list=var_list)
-
-        init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
-        sess.run(init_op)
+        # config = tf.ConfigProto(allow_soft_placement=True)
+        # sess = tf.Session(config=config)
+        #
+        # self.prepare()
+        # var_list = network.get_network_params()
+        # saver = tf.train.Saver(var_list=var_list)
+        #
+        # init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
+        # sess.run(init_op)
