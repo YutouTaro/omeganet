@@ -114,6 +114,14 @@ class Tester(general_tester.GeneralTester):
 
         # learning rate policy
         decay_steps = int(num_train_samples / self.params.batchSize * self.params.epochs_per_decay)
+        learning_rate = tf.train.exponential_decay(
+            self.params.learning_rate,
+            global_step,
+            decay_steps,
+            self.learning_rate_decay_factor,
+            staircase=True,
+            name='exponential_decay_learning_rate'
+        )
 
         # config = tf.ConfigProto(allow_soft_placement=True)
         # sess = tf.Session(config=config)

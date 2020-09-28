@@ -18,11 +18,11 @@ class TrainOptions(BaseOptions):
         self.parser.add_argument('--epochs_per_decay', type=int, default=0, help='# of epochs to decay the learning rate')
         self.parser.add_argument('--adambeta1', type=float, default=0.9, help='first momentum term of adam')
         self.parser.add_argument('--adambeta2', type=float, default=0.999, help='second momentum term of adam')
-        self.parser.add_argument('--lr', type=float, default=0.0005, help='initial learning rate for adam')
+        self.parser.add_argument('--lr', type=float, default=0.001, help='initial learning rate for adam')
         # self.parser.add_argument('--pool_size', type=int, default=50, help='the size of image buffer that stores previously generated images')
         # self.parser.add_argument('--use_html', action='store_true', help='save intermediate training results to [opt.checkpoints_dir]/[opt.name]/web/')
         # self.parser.add_argument('--lr_policy', type=str, default='lambda', help='learning rate policy: lambda|step|plateau')
-        # self.parser.add_argument('--lr_decay_iters', type=int, default=50, help='multiply by a gamma every lr_decay_iters iterations')
+        self.parser.add_argument('--lr_decay', type=int, default=0.95, help='decay of the learning rate')
         # self.parser.add_argument('--init_weights', type=str, default='pretrained_models/places-googlenet.pickle', help='initiliaze network from, e.g., pretrained_models/places-googlenet.pickle')
 
         self.isTrain = True

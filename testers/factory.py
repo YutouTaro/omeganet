@@ -29,7 +29,8 @@ tester_parameters = namedtuple(
 
 trainer_parameters = namedtuple(
     'trainer_parameters',
-    ["output_path", "checkpoint_path", "width", "height", "filenames_file", "datapath", "batchSize", "epochs_per_decay"]
+    ["output_path", "checkpoint_path", "width", "height", "filenames_file", "datapath", "batchSize", "epochs_per_decay",
+     "learning_rate", "learning_rate_decay_factor"]
                               )
 
 TESTER_KITTI_FACTORY = {

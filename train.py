@@ -47,7 +47,9 @@ def configure_parameters():
         filenames_file=args.filenames_file,
         datapath=args.datapath,
         batchSize=args.batchSize,
-        epochs_per_decay=args.epochs_per_decay
+        epochs_per_decay=args.epochs_per_decay,
+        learning_rate=args.lr,
+        learning_rate_decay_factor=args.lr_decay,
     )
 
     return network_params, dataloader_params, training_params
