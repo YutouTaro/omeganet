@@ -39,13 +39,15 @@ def configure_parameters():
         height=args.height, width=args.width, task=args.task
     )
 
-    training_params = tester_factory.tester_parameters(
+    training_params = tester_factory.trainer_parameters(
         output_path=args.dest,
         checkpoint_path=args.ckpt,
         width=args.width,
         height=args.height,
         filenames_file=args.filenames_file,
         datapath=args.datapath,
+        batchSize=args.batchSize,
+        epochs_per_decay=args.epochs_per_decay
     )
 
     return network_params, dataloader_params, training_params
