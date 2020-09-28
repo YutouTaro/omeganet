@@ -95,13 +95,25 @@ class Tester(general_tester.GeneralTester):
         # TODO
         # dimention of the training data
         # get number of samples
+        # num_train_samples = 0
+        # with open(dataloader.filenames_file) as fin:
+        #     lines = fin.readlines()
+        #     for filename in lines:
+        #         filename = filename.rstrip()
+        #         if os.path.isfile(os.path.join(dataloader.datapath, filename)):
+        #             num_train_samples += 1
+        # print("num_train_samples = {}".format(num_train_samples))
         num_train_samples = 0
         with open(dataloader.filenames_file) as fin:
             lines = fin.readlines()
             for filename in lines:
                 filename = filename.rstrip()
+                # print(filename)
+                # print(os.path.join(dataloader.datapath, filename))
                 if os.path.isfile(os.path.join(dataloader.datapath, filename)):
+                    # print('+1')
                     num_train_samples += 1
+                # break
         print("num_train_samples = {}".format(num_train_samples))
 
         # num_features
