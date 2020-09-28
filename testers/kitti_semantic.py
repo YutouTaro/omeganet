@@ -118,7 +118,7 @@ class Tester(general_tester.GeneralTester):
             self.params.learning_rate,
             global_step,
             decay_steps,
-            self.learning_rate_decay_factor,
+            self.params.learning_rate_decay_factor,
             staircase=True,
             name='exponential_decay_learning_rate'
         )
