@@ -82,3 +82,40 @@ class Tester(general_tester.GeneralTester):
         """
         name = str(step).zfill(6) + "_10"
         return name
+
+    def train(self, network, dataloader, is_training):
+        """Generate semantic network training.
+            It saves semantic artifacts in the
+            self.params.output_path/semantic folder.
+            :param network: network to test
+            :param dataloader: dataloader for this test
+            :param is_training: training_flag for Batchnorm
+        """
+
+        # TODO
+        # dimention of the training data
+        # get number of samples
+        num_train_samples = 0
+        with open(self.filenames_file) as fin:
+            filename = fin.readline()
+            if os.path.isfile(os.path.join(self.datapath, filename)):
+                num_train_samples += 1
+        print("num_train_samples = {}".format(num_train_samples))
+        # num_features
+
+        #parameters
+        global_step = tf.Variable(0, name='global_step', trainable=False)
+
+        # learning rate policy
+        # TODO
+        # decay_steps = int(num_train_samples / batch_size * num_epochs_per_decay)
+
+        config = tf.ConfigProto(allow_soft_placement=True)
+        sess = tf.Session(config=config)
+
+        self.prepare()
+        var_list = network.get_network_params()
+        saver = tf.train.Saver(var_list=var_list)
+
+        init_op = tf.group(tf.global_variables_initializer(), tf.local_variables_initializer())
+        sess.run(init_op)
