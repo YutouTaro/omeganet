@@ -97,10 +97,13 @@ class Tester(general_tester.GeneralTester):
         # get number of samples
         num_train_samples = 0
         with open(dataloader.filenames_file) as fin:
-            filename = fin.readline()
-            if os.path.isfile(os.path.join(dataloader.datapath, filename)):
-                num_train_samples += 1
+            lines = fin.readlines()
+            for filename in lines:
+                filename = filename.rstrip()
+                if os.path.isfile(os.path.join(dataloader.datapath, filename)):
+                    num_train_samples += 1
         print("num_train_samples = {}".format(num_train_samples))
+
         # num_features
 
         #parameters
