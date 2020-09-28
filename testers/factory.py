@@ -27,6 +27,11 @@ tester_parameters = namedtuple(
     "output_path " "checkpoint_path, " "width," "height," "filenames_file," "datapath",
 )
 
+trainer_parameters = namedtuple(
+    'trainer_parameters',
+    "output_path " "checkpoint_path, " "width," "height," "filenames_file," "datapath", "batchSize", "epochs_per_decay"
+                              )
+
 TESTER_KITTI_FACTORY = {
     "depth": kitti_depth.Tester,
     "flow": kitti_flow.Tester,
