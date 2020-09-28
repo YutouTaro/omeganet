@@ -92,17 +92,8 @@ class Tester(general_tester.GeneralTester):
             :param is_training: training_flag for Batchnorm
         """
 
-        # TODO
         # dimention of the training data
         # get number of samples
-        # num_train_samples = 0
-        # with open(dataloader.filenames_file) as fin:
-        #     lines = fin.readlines()
-        #     for filename in lines:
-        #         filename = filename.rstrip()
-        #         if os.path.isfile(os.path.join(dataloader.datapath, filename)):
-        #             num_train_samples += 1
-        # print("num_train_samples = {}".format(num_train_samples))
         num_train_samples = 0
         with open(dataloader.filenames_file) as fin:
             lines = fin.readlines()
@@ -116,14 +107,14 @@ class Tester(general_tester.GeneralTester):
                 # break
         print("num_train_samples = {}".format(num_train_samples))
 
+        # TODO
         # num_features
 
         #parameters
         global_step = tf.Variable(0, name='global_step', trainable=False)
 
         # learning rate policy
-        # TODO
-        # decay_steps = int(num_train_samples / batch_size * num_epochs_per_decay)
+        decay_steps = int(num_train_samples / batch_size * num_epochs_per_decay)
 
         config = tf.ConfigProto(allow_soft_placement=True)
         sess = tf.Session(config=config)

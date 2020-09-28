@@ -23,10 +23,10 @@ if args.gpu_ids == -1:
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 def configure_parameters():
-    """Prepare configurations for Network, Dataloader and Tester
+    """Prepare configurations for Network, Dataloader and Trainer
         :return network_params: configuration for Network
         :return dataloader_params: configuration for Dataloader
-        :return testing_params: configuration for Tester
+        :return training_params: configuration for Trainer
     """
     network_params = general_network.network_parameters(
         height=args.height,
@@ -39,7 +39,7 @@ def configure_parameters():
         height=args.height, width=args.width, task=args.task
     )
 
-    testing_params = tester_factory.tester_parameters(
+    training_params = tester_factory.tester_parameters(
         output_path=args.dest,
         checkpoint_path=args.ckpt,
         width=args.width,
@@ -48,9 +48,9 @@ def configure_parameters():
         datapath=args.datapath,
     )
 
-    return network_params, dataloader_params, testing_params
+    return network_params, dataloader_params, training_params
 
-def configure_network(network_params, dataloader_params):
+def configure_training_network(network_params, dataloader_params):
     """Build the Dataloader, then build the Network.
         :param network_params: configuration for Network
         :param dataloader_params: configuration for Dataloader
@@ -81,15 +81,15 @@ def main(_):
     model_exists = utilities.check_model_exists(args.ckpt)
     if not model_exists:
         raise ValueError("Model not found")
-    network_params, dataloader_params, testing_params = configure_parameters()
+    network_params, dataloader_params, training_params = configure_parameters()
     print("=======dataloader_params: {}".format(dataloader_params))
-    network, dataloader, training_flag = configure_network(
+    network, dataloader, training_flag = configure_training_network(
         network_params, dataloader_params
     )
     print("=======training_flag: {}".format(training_flag))
 
-    # tester = tester_factory.get_tester(args.task)(testing_params)
-    # tester.test(network, dataloader, training_flag)
+    trainer = tester_factory.get_tester(args.task)(training_params)
+    # trainer.train(network, dataloader, training_flag)
 
 
 if __name__ == "__main__":
