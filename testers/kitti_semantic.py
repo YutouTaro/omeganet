@@ -96,9 +96,9 @@ class Tester(general_tester.GeneralTester):
         # dimention of the training data
         # get number of samples
         num_train_samples = 0
-        with open(self.filenames_file) as fin:
+        with open(dataloader.filenames_file) as fin:
             filename = fin.readline()
-            if os.path.isfile(os.path.join(self.datapath, filename)):
+            if os.path.isfile(os.path.join(dataloader.datapath, filename)):
                 num_train_samples += 1
         print("num_train_samples = {}".format(num_train_samples))
         # num_features
