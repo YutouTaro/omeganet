@@ -39,29 +39,29 @@ class Tester(general_tester.GeneralTester):
             :param is_training: training_flag for Batchnorm
         """
 
-        config = tf.ConfigProto(allow_soft_placement=True)
-        sess = tf.Session(config=config)
+        config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
+        sess = tf.compat.v1.Session(config=config)
 
         self.prepare()
         var_list = network.get_network_params()
-        saver = tf.train.Saver(var_list=var_list)
+        saver = tf.compat.v1.train.Saver(var_list=var_list)
 
         init_op = tf.group(
-            tf.global_variables_initializer(), tf.local_variables_initializer()
+            tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()
         )
         sess.run(init_op)
 
         coordinator = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coordinator)
+        threads = tf.compat.v1.train.start_queue_runners(sess=sess, coord=coordinator)
 
         saver.restore(sess, self.params.checkpoint_path)
 
         print(" [*] Load model: SUCCESS")
 
-        prediction_semantic = tf.image.resize_images(
+        prediction_semantic = tf.image.resize(
             network.semantic_logits, [dataloader.image_h, dataloader.image_w]
         )
-        ops = [tf.argmax(prediction_semantic[0], -1)]
+        ops = [tf.argmax(input=prediction_semantic[0], axis=-1)]
 
         with tqdm(total=self.num_test_samples) as pbar:
             for step in range(self.num_test_samples):
@@ -107,14 +107,15 @@ class Tester(general_tester.GeneralTester):
                 # break
         print("num_train_samples = {}".format(num_train_samples))
 
-        num_features = network.classes
+        # num_features
+        num_classes = network.classes
 
         #parameters
         global_step = tf.Variable(0, name='global_step', trainable=False)
 
         # learning rate policy
         decay_steps = int(num_train_samples / self.params.batchSize * self.params.epochs_per_decay)
-        learning_rate = tf.train.exponential_decay(
+        learning_rate = tf.compat.v1.train.exponential_decay(
             self.params.learning_rate,
             global_step,
             decay_steps,
@@ -122,6 +123,13 @@ class Tester(general_tester.GeneralTester):
             staircase=True,
             name='exponential_decay_learning_rate'
         )
+
+        # image_place = tf.placeholder(tf.float32, shape=([None, num_features]), name='image')
+        label_place = tf.compat.v1.placeholder(tf.float32, shape=([None, num_classes]), name='gt')
+        dropout_param = tf.compat.v1.placeholder(tf.float32)
+
+        # softmax_loss
+
 
         # config = tf.ConfigProto(allow_soft_placement=True)
         # sess = tf.Session(config=config)

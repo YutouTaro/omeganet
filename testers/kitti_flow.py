@@ -44,25 +44,25 @@ class Tester(GeneralTester):
             :param dataloader: dataloader for this test
             :param training_flag: training_flag for Batchnorm
         """
-        config = tf.ConfigProto(allow_soft_placement=True)
-        sess = tf.Session(config=config)
+        config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
+        sess = tf.compat.v1.Session(config=config)
 
         self.prepare()
         var_list = network.get_network_params()
-        saver = tf.train.Saver(var_list=var_list)
+        saver = tf.compat.v1.train.Saver(var_list=var_list)
 
         init_op = tf.group(
-            tf.global_variables_initializer(), tf.local_variables_initializer()
+            tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()
         )
         sess.run(init_op)
 
         coordinator = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coordinator)
+        threads = tf.compat.v1.train.start_queue_runners(sess=sess, coord=coordinator)
 
         saver.restore(sess, self.params.checkpoint_path)
         print(" [*] Load model: SUCCESS")
 
-        predicted_flow = tf.image.resize_images(
+        predicted_flow = tf.image.resize(
             network.optical_flow, [dataloader.image_h, dataloader.image_w]
         )
 

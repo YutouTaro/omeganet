@@ -14,7 +14,7 @@ def get_pixel_value(img, x, y):
     -------
     - output: tensor of shape (B, H, W, C)
     """
-    shape = tf.shape(x)
+    shape = tf.shape(input=x)
     batch_size = shape[0]
     height = shape[1]
     width = shape[2]

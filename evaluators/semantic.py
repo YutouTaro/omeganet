@@ -161,13 +161,13 @@ def convert_labels(sem, mapping):
     m = tf.ones_like(p) * 255
     for i in range(0, len(mapping)):
         mi = tf.multiply(tf.ones_like(p), mapping[i])
-        m = tf.where(tf.equal(p, i), mi, m)
+        m = tf.compat.v1.where(tf.equal(p, i), mi, m)
     return m
 
 
-prediction_placeholder = tf.placeholder(tf.int32)
+prediction_placeholder = tf.compat.v1.placeholder(tf.int32)
 prediction_placeholder.set_shape([None, None, 1])
-gt_placeholder = tf.placeholder(tf.int32)
+gt_placeholder = tf.compat.v1.placeholder(tf.int32)
 
 gt = gt_placeholder
 prediction = prediction_placeholder
@@ -182,16 +182,16 @@ pred_cat = convert_labels(prediction, trainId2cat)
 gt_cat = convert_labels(gt, trainId2cat)
 
 ### INIT WEIGHTS MIOU
-weightsValue = tf.to_float(tf.not_equal(gt, args.ignore_label))
+weightsValue = tf.cast(tf.not_equal(gt, args.ignore_label), dtype=tf.float32)
 ### IGNORE LABELS TO 0, WE HAVE ALREADY MASKED THOSE PIXELS WITH WEIGHTS 0###
-gt = tf.where(tf.equal(gt, args.ignore_label), tf.zeros_like(gt), gt)
-prediction = tf.where(
+gt = tf.compat.v1.where(tf.equal(gt, args.ignore_label), tf.zeros_like(gt), gt)
+prediction = tf.compat.v1.where(
     tf.equal(prediction, args.ignore_label), tf.zeros_like(prediction), prediction
 )
 ### ACCURACY ###
-acc, update_op_acc = tf.metrics.accuracy(gt, prediction, weights=weightsValue)
+acc, update_op_acc = tf.compat.v1.metrics.accuracy(gt, prediction, weights=weightsValue)
 ### MIOU ###
-miou, update_op = tf.metrics.mean_iou(
+miou, update_op = tf.compat.v1.metrics.mean_iou(
     labels=tf.reshape(gt, [-1]),
     predictions=tf.reshape(prediction, [-1]),
     num_classes=num_train_classes,
@@ -200,14 +200,14 @@ miou, update_op = tf.metrics.mean_iou(
 
 # CATEGORIES
 ### INIT WEIGHTS MIOU
-weightsValue_cat = tf.to_float(tf.not_equal(gt_cat, args.ignore_label))
+weightsValue_cat = tf.cast(tf.not_equal(gt_cat, args.ignore_label), dtype=tf.float32)
 ### IGNORE LABELS TO 0, WE HAVE ALREADY MASKED THOSE PIXELS WITH WEIGHTS 0###
-gt_cat = tf.where(tf.equal(gt_cat, args.ignore_label), tf.zeros_like(gt_cat), gt_cat)
-pred_cat = tf.where(
+gt_cat = tf.compat.v1.where(tf.equal(gt_cat, args.ignore_label), tf.zeros_like(gt_cat), gt_cat)
+pred_cat = tf.compat.v1.where(
     tf.equal(pred_cat, args.ignore_label), tf.zeros_like(pred_cat), pred_cat
 )
 ### MIOU ###
-miou_cat, update_op_cat = tf.metrics.mean_iou(
+miou_cat, update_op_cat = tf.compat.v1.metrics.mean_iou(
     labels=tf.reshape(gt_cat, [-1]),
     predictions=tf.reshape(pred_cat, [-1]),
     num_classes=num_categories,
@@ -215,10 +215,10 @@ miou_cat, update_op_cat = tf.metrics.mean_iou(
     name="mean_iou_cat"
 )
 
-init_op = [tf.global_variables_initializer(), tf.local_variables_initializer()]
+init_op = [tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()]
 
 miou_value = 0
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
     sess.run(init_op)
     lines = open(args.filename_file).readlines()
     lenght = len(lines)
@@ -258,7 +258,7 @@ with tf.Session() as sess:
         )
 
     confusion_matrix = (
-        tf.get_default_graph()
+        tf.compat.v1.get_default_graph()
         .get_tensor_by_name("mean_iou/total_confusion_matrix:0")
         .eval()
     )

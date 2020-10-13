@@ -25,7 +25,7 @@ def upsample_nn(x, ratio):
     s = x.get_shape().as_list()
     h = s[1]
     w = s[2]
-    return tf.image.resize_nearest_neighbor(x, [h * ratio, w * ratio])
+    return tf.image.resize(x, [h * ratio, w * ratio], method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
 
 
 def conv2d(
@@ -35,7 +35,7 @@ def conv2d(
     stride,
     normalizer_fn=slim.batch_norm,
     activation_fn=tf.nn.relu,
-    weights_regularizer=slim.l2_regularizer(0.0001),
+    weights_regularizer=tf.keras.regularizers.l2(0.5 * (0.0001)),
     normalizer_params=True,
     padding=(1, 1),
     reflect=True,
@@ -49,7 +49,7 @@ def conv2d(
 
     if reflect:
         inputs = tf.pad(
-            inputs, [[0, 0], [h_pad, h_pad], [w_pad, w_pad], [0, 0]], "REFLECT"
+            tensor=inputs, paddings=[[0, 0], [h_pad, h_pad], [w_pad, w_pad], [0, 0]], mode="REFLECT"
         )
 
     return tf.contrib.layers.conv2d(
@@ -73,7 +73,7 @@ def upconv(
     stride,
     normalizer_fn=slim.batch_norm,
     activation_fn=tf.nn.relu,
-    weights_regularizer=slim.l2_regularizer(0.0001),
+    weights_regularizer=tf.keras.regularizers.l2(0.5 * (0.0001)),
     normalizer_params=True,
     padding=(1, 1),
 ):
@@ -103,14 +103,14 @@ def gradient_y(img):
 
 def L2_norm(x, axis=3, keepdims=True):
     curr_offset = 1e-10
-    l2_norm = tf.norm(tf.abs(x) + curr_offset, axis=axis, keepdims=keepdims)
+    l2_norm = tf.norm(tensor=tf.abs(x) + curr_offset, axis=axis, keepdims=keepdims)
     return l2_norm
 
 
 def spatial_normalize(disp):
-    with tf.variable_scope("spatial_normalizer"):
+    with tf.compat.v1.variable_scope("spatial_normalizer"):
         _, curr_h, curr_w, curr_c = disp.get_shape().as_list()
-        disp_mean = tf.reduce_mean(disp, axis=[1, 2, 3], keepdims=True)
+        disp_mean = tf.reduce_mean(input_tensor=disp, axis=[1, 2, 3], keepdims=True)
         disp_mean = tf.tile(disp_mean, [1, curr_h, curr_w, curr_c])
         return disp / disp_mean
 
@@ -127,44 +127,44 @@ def post_process_disparity(disp):
 
 
 def reduce_mean_masked(tensor, mask):
-    with tf.variable_scope("reduce_mean_masked"):
-        valid_points = tf.maximum(tf.reduce_sum(mask), 1)
-        loss = tf.reduce_sum(tensor * mask) / valid_points
+    with tf.compat.v1.variable_scope("reduce_mean_masked"):
+        valid_points = tf.maximum(tf.reduce_sum(input_tensor=mask), 1)
+        loss = tf.reduce_sum(input_tensor=tensor * mask) / valid_points
         return loss
 
 
 def reduce_mean_probability_masked(tensor, mask, probability):
-    with tf.variable_scope("reduce_mean_masked"):
-        valid_points = tf.maximum(tf.reduce_sum(mask), 1)
-        loss = tf.reduce_sum(tensor * mask * probability) / valid_points
+    with tf.compat.v1.variable_scope("reduce_mean_masked"):
+        valid_points = tf.maximum(tf.reduce_sum(input_tensor=mask), 1)
+        loss = tf.reduce_sum(input_tensor=tensor * mask * probability) / valid_points
         return loss
 
 
 # Upsampling layer
 def bilinear_upsampling_by_convolution(x, stride, normalizer_params=None):
-    with tf.variable_scope("bilinear_upsampling_by_convolution"):
+    with tf.compat.v1.variable_scope("bilinear_upsampling_by_convolution"):
         f = x.get_shape().as_list()[-1]
         return upconv(x, f, 3, stride, normalizer_params=normalizer_params)
 
 
 def depth_upsampling(x, scales):
-    with tf.variable_scope("depth_upsampling"):
+    with tf.compat.v1.variable_scope("depth_upsampling"):
         features = []
         for i in range(1, scales + 1):
-            with tf.variable_scope("upsampler_pred_" + str(i)):
-                up = tf.image.resize_bilinear(
+            with tf.compat.v1.variable_scope("upsampler_pred_" + str(i)):
+                up = tf.image.resize(
                     x,
                     [
                         x.get_shape().as_list()[1] * (2 ** i),
                         x.get_shape().as_list()[2] * (2 ** i),
-                    ],
+                    ], method=tf.image.ResizeMethod.BILINEAR,
                 )
                 features.append(up)
         return features
 
 
 def stop_features_gradient(features):
-    with tf.variable_scope("stop_features_gradient"):
+    with tf.compat.v1.variable_scope("stop_features_gradient"):
         new_features = []
         for img_x_features in features:
             new_img_x_features = []
@@ -175,7 +175,7 @@ def stop_features_gradient(features):
 
 
 def couple_imgs_features(features):
-    with tf.variable_scope("couple_imgs_features"):
+    with tf.compat.v1.variable_scope("couple_imgs_features"):
         coupled_features = []
         for tgt_feat, src2_feat in zip(features[1], features[2]):
             couple_feat = tf.concat([tgt_feat, src2_feat], axis=-1)

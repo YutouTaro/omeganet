@@ -157,7 +157,7 @@ def extract_semantic_priors(predictions):
     priors = []
     b, h, w, _ = predictions.shape
     for i in range(b):
-        p = tf.py_func(label_to_priors, [predictions[i]], tf.uint8)
+        p = tf.compat.v1.py_func(label_to_priors, [predictions[i]], tf.uint8)
         p = tf.cast(p, tf.float32)
         priors.append(p)
     priors = tf.stack(priors, axis=0)
@@ -179,7 +179,7 @@ def colormap_semantic(pred_sem, dict_id2color=id2Color):
     m = tf.zeros_like(p)
     for i in range(0, len(dict_id2color)):
         mi = tf.multiply(tf.ones_like(p), dict_id2color[i])
-        m = tf.where(tf.equal(p, i), mi, m)
+        m = tf.compat.v1.where(tf.equal(p, i), mi, m)
     return m
 
 
@@ -213,15 +213,15 @@ def colorize(value, vmin=None, vmax=None, cmap=None):
     """
 
     # normalize
-    vmin = tf.reduce_min(value) if vmin is None else vmin
-    vmax = tf.reduce_max(value) if vmax is None else vmax
+    vmin = tf.reduce_min(input_tensor=value) if vmin is None else vmin
+    vmax = tf.reduce_max(input_tensor=value) if vmax is None else vmax
     value = (value - vmin) / (vmax - vmin)  # vmin..vmax
 
     # squeeze last dim if it exists
     value = tf.squeeze(value)
 
     # quantize
-    indices = tf.to_int32(tf.round(value * 255))
+    indices = tf.cast(tf.round(value * 255), dtype=tf.int32)
 
     # gather
     cm = matplotlib.cm.get_cmap(cmap if cmap is not None else "gray")
@@ -250,17 +250,17 @@ def flow_to_color(flow, mask=None, max_flow=None):
         mask: flow validity mask of shape [num_batch, height, width, 1].
     """
     n = 8
-    num_batch, height, width, _ = tf.unstack(tf.shape(flow))
+    num_batch, height, width, _ = tf.unstack(tf.shape(input=flow))
     mask = tf.ones([num_batch, height, width, 1]) if mask is None else mask
     flow_u, flow_v = tf.unstack(flow, axis=3)
     if max_flow is not None:
         max_flow = tf.maximum(max_flow, 1)
     else:
-        max_flow = tf.reduce_max(tf.abs(flow * mask))
-    mag = tf.sqrt(tf.reduce_sum(tf.square(flow), 3))
+        max_flow = tf.reduce_max(input_tensor=tf.abs(flow * mask))
+    mag = tf.sqrt(tf.reduce_sum(input_tensor=tf.square(flow), axis=3))
     angle = tf.atan2(flow_v, flow_u)
 
-    im_h = tf.mod(angle / (2 * np.pi) + 1.0, 1.0)
+    im_h = tf.math.floormod(angle / (2 * np.pi) + 1.0, 1.0)
     im_s = tf.clip_by_value(mag * n / max_flow, 0, 1)
     im_v = tf.clip_by_value(n - im_s, 0, 1)
     im_hsv = tf.stack([im_h, im_s, im_v], 3)
@@ -274,9 +274,9 @@ def tf_color_prior(prior):
 
 
 def get_height_width(img):
-    s = tf.shape(img)
-    h = tf.to_int32(s[1])
-    w = tf.to_int32(s[2])
+    s = tf.shape(input=img)
+    h = tf.cast(s[1], dtype=tf.int32)
+    w = tf.cast(s[2], dtype=tf.int32)
     return h, w
 
 
@@ -297,7 +297,7 @@ def create_dir(dirname):
 
 
 def mask(img, mask, active):
-    with tf.variable_scope("mask"):
+    with tf.compat.v1.variable_scope("mask"):
         if active:
             return img * mask
         return img
@@ -307,11 +307,11 @@ def flow_resize(flow, out_size, is_scale=True, method=0):
     """
         method: 0 mean bilinear, 1 means nearest
     """
-    flow_size = tf.to_float(tf.shape(flow)[-3:-1])
+    flow_size = tf.cast(tf.shape(input=flow)[-3:-1], dtype=tf.float32)
     b, _, _, c = flow.get_shape().as_list()
-    flow = tf.image.resize_images(flow, out_size, method=method, align_corners=True)
+    flow = tf.image.resize(flow, out_size, method=method)
     if is_scale:
-        scale = tf.to_float(out_size) / flow_size
+        scale = tf.cast(out_size, dtype=tf.float32) / flow_size
         scale = tf.stack([scale[1], scale[0]])
         flow = tf.multiply(flow, scale)
     return flow

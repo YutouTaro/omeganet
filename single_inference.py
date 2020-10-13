@@ -163,18 +163,18 @@ def main(_):
     output_tensors = []
 
     print(" [*] Session creation: SUCCESS")
-    config = tf.ConfigProto(allow_soft_placement=True)
-    sess = tf.Session(config=config)
+    config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
+    sess = tf.compat.v1.Session(config=config)
 
-    training_flag = tf.placeholder(tf.bool)
+    training_flag = tf.compat.v1.placeholder(tf.bool)
 
-    tensor_src1 = tf.placeholder(
+    tensor_src1 = tf.compat.v1.placeholder(
         tf.float32, shape=(1, opts.height, opts.width, 3), name="src1"
     )
-    tensor_tgt = tf.placeholder(
+    tensor_tgt = tf.compat.v1.placeholder(
         tf.float32, shape=(1, opts.height, opts.width, 3), name="tgt"
     )
-    tensor_src2 = tf.placeholder(
+    tensor_src2 = tf.compat.v1.placeholder(
         tf.float32, shape=(1, opts.height, opts.width, 3), name="src2"
     )
     batch = {"src_img_1": tensor_src1, "tgt_img": tensor_tgt, "src_img_2": tensor_src2}
@@ -187,14 +187,14 @@ def main(_):
     )
     network.build()
     var_list = network.get_network_params()
-    saver = tf.train.Saver(var_list=var_list)
+    saver = tf.compat.v1.train.Saver(var_list=var_list)
 
     init_op = tf.group(
-        tf.global_variables_initializer(), tf.local_variables_initializer()
+        tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()
     )
     sess.run(init_op)
     coordinator = tf.train.Coordinator()
-    threads = tf.train.start_queue_runners(sess=sess, coord=coordinator)
+    threads = tf.compat.v1.train.start_queue_runners(sess=sess, coord=coordinator)
 
     saver.restore(sess, opts.ckpt)
     print(" [*] Load model: SUCCESS")
@@ -203,7 +203,7 @@ def main(_):
     output_mapping = {}
 
     if "inverse_depth" in opts.tasks:
-        inverse_depth = tf.image.resize_images(network.disp, [height, width])
+        inverse_depth = tf.image.resize(network.disp, [height, width])
         output_tensors.append(inverse_depth)
         output_mapping[index] = "inverse_depth"
         index += 1
@@ -217,13 +217,13 @@ def main(_):
         index += 1
 
     if "flow" in opts.tasks:
-        optical_flow = tf.image.resize_images(network.optical_flow, [height, width])
+        optical_flow = tf.image.resize(network.optical_flow, [height, width])
         output_tensors.append(optical_flow)
         output_mapping[index] = "flow"
         index += 1
 
     if "motion_mask" in opts.tasks:
-        motion_mask = tf.image.resize_images(
+        motion_mask = tf.image.resize(
             network.motion_mask,
             [height, width],
             method=tf.image.ResizeMethod.NEAREST_NEIGHBOR,
@@ -290,4 +290,4 @@ def main(_):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    tf.compat.v1.app.run()

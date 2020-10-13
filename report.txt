@@ -1,0 +1,590 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 39 files
+Detected 5 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: ./omeganet/testers/kitti_depth.py
+--------------------------------------------------------------------------------
+./omeganet/testers/kitti_depth.py:79:16: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: ./omeganet/helpers/flow_tool/flowlib.py
+--------------------------------------------------------------------------------
+./omeganet/helpers/flow_tool/flowlib.py:75:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+File: ./omeganet/networks/ops.py
+--------------------------------------------------------------------------------
+./omeganet/networks/ops.py:55:11: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+--------------------------------------------------------------------------------
+File: ./omeganet/networks/network_components.py
+--------------------------------------------------------------------------------
+./omeganet/networks/network_components.py:133:12: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+./omeganet/networks/network_components.py:147:16: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: './omeganet/'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file './omeganet/train.py'
+ outputting to './omeganet_tfv2/train.py'
+--------------------------------------------------------------------------------
+
+66:20: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+100:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/test.py'
+ outputting to './omeganet_tfv2/test.py'
+--------------------------------------------------------------------------------
+
+118:20: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+151:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/single_inference.py'
+ outputting to './omeganet_tfv2/single_inference.py'
+--------------------------------------------------------------------------------
+
+166:13: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+167:11: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+169:20: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+171:18: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+174:17: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+177:18: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+190:12: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+193:8: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+193:43: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+197:14: INFO: Renamed 'tf.train.start_queue_runners' to 'tf.compat.v1.train.start_queue_runners'
+206:24: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+220:23: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+226:22: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+293:4: INFO: Renamed 'tf.app.run' to 'tf.compat.v1.app.run'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/kitti_semantic.py'
+ outputting to './omeganet_tfv2/testers/kitti_semantic.py'
+--------------------------------------------------------------------------------
+
+42:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+43:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+47:16: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+50:12: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+50:47: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+55:18: INFO: Renamed 'tf.train.start_queue_runners' to 'tf.compat.v1.train.start_queue_runners'
+61:30: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+64:15: INFO: Added keywords to args of function 'tf.argmax'
+118:24: INFO: tf.train.exponential_decay requires manual check. To use learning rate decay schedules with TensorFlow 2.0, switch to the schedules in `tf.keras.optimizers.schedules`.
+
+118:24: INFO: Renamed 'tf.train.exponential_decay' to 'tf.compat.v1.train.exponential_decay'
+128:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+129:24: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/kitti_flow.py'
+ outputting to './omeganet_tfv2/testers/kitti_flow.py'
+--------------------------------------------------------------------------------
+
+47:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+48:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+52:16: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+55:12: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+55:47: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+60:18: INFO: Renamed 'tf.train.start_queue_runners' to 'tf.compat.v1.train.start_queue_runners'
+65:25: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/factory.py'
+ outputting to './omeganet_tfv2/testers/factory.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/general_tester.py'
+ outputting to './omeganet_tfv2/testers/general_tester.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/kitti_depth.py'
+ outputting to './omeganet_tfv2/testers/kitti_depth.py'
+--------------------------------------------------------------------------------
+
+49:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+50:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+55:16: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+58:12: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+58:47: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+63:18: INFO: Renamed 'tf.train.start_queue_runners' to 'tf.compat.v1.train.start_queue_runners'
+68:26: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+79:16: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/__init__.py'
+ outputting to './omeganet_tfv2/testers/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/kitti_mask.py'
+ outputting to './omeganet_tfv2/testers/kitti_mask.py'
+--------------------------------------------------------------------------------
+
+41:17: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+42:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+46:16: INFO: Renamed 'tf.train.Saver' to 'tf.compat.v1.train.Saver'
+49:12: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+49:47: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+54:18: INFO: Renamed 'tf.train.start_queue_runners' to 'tf.compat.v1.train.start_queue_runners'
+60:25: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/testers/error_tester.py'
+ outputting to './omeganet_tfv2/testers/error_tester.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/dataloaders/general_dataloader.py'
+ outputting to './omeganet_tfv2/dataloaders/general_dataloader.py'
+--------------------------------------------------------------------------------
+
+29:11: INFO: Renamed 'tf.py_func' to 'tf.compat.v1.py_func'
+57:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+59:29: INFO: Added keywords to args of function 'tf.substr'
+59:29: INFO: Renamed 'tf.substr' to 'tf.strings.substr'
+62:20: INFO: Added keywords to args of function 'tf.cond'
+64:45: INFO: Renamed 'tf.read_file' to 'tf.io.read_file'
+65:44: INFO: Renamed 'tf.read_file' to 'tf.io.read_file'
+68:27: INFO: Added keywords to args of function 'tf.shape'
+69:27: INFO: Added keywords to args of function 'tf.shape'
+72:20: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/dataloaders/factory.py'
+ outputting to './omeganet_tfv2/dataloaders/factory.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/dataloaders/__init__.py'
+ outputting to './omeganet_tfv2/dataloaders/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/dataloaders/dataloader_three_frames.py'
+ outputting to './omeganet_tfv2/dataloaders/dataloader_three_frames.py'
+--------------------------------------------------------------------------------
+
+26:22: INFO: Renamed 'tf.train.string_input_producer' to 'tf.compat.v1.train.string_input_producer'
+29:22: INFO: Renamed 'tf.TextLineReader' to 'tf.compat.v1.TextLineReader'
+31:21: INFO: Renamed 'tf.string_split' to 'tf.compat.v1.string_split'
+33:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+34:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+35:33: INFO: Renamed 'tf.string_join' to 'tf.strings.join'
+36:31: INFO: Renamed 'tf.string_join' to 'tf.strings.join'
+37:33: INFO: Renamed 'tf.string_join' to 'tf.strings.join'
+43:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+48:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+54:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/dataloaders/dataloader_one_frame.py'
+ outputting to './omeganet_tfv2/dataloaders/dataloader_one_frame.py'
+--------------------------------------------------------------------------------
+
+26:22: INFO: Renamed 'tf.train.string_input_producer' to 'tf.compat.v1.train.string_input_producer'
+29:22: INFO: Renamed 'tf.TextLineReader' to 'tf.compat.v1.TextLineReader'
+31:21: INFO: Renamed 'tf.string_split' to 'tf.compat.v1.string_split'
+33:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+34:27: INFO: Renamed 'tf.string_join' to 'tf.strings.join'
+40:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/evaluators/flow.py'
+ outputting to './omeganet_tfv2/evaluators/flow.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/evaluators/depth.py'
+ outputting to './omeganet_tfv2/evaluators/depth.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/evaluators/mask.py'
+ outputting to './omeganet_tfv2/evaluators/mask.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/evaluators/__init__.py'
+ outputting to './omeganet_tfv2/evaluators/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/evaluators/semantic.py'
+ outputting to './omeganet_tfv2/evaluators/semantic.py'
+--------------------------------------------------------------------------------
+
+164:12: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+168:25: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+170:17: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+185:15: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+187:5: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+188:13: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+192:21: INFO: tf.metrics.accuracy requires manual check. tf.metrics have been replaced with object oriented versions in TF 2.0 and after. The metric function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+192:21: INFO: Renamed 'tf.metrics.accuracy' to 'tf.compat.v1.metrics.accuracy'
+194:18: INFO: tf.metrics.mean_iou requires manual check. tf.metrics have been replaced with object oriented versions in TF 2.0 and after. The metric function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+194:18: INFO: Renamed 'tf.metrics.mean_iou' to 'tf.compat.v1.metrics.mean_iou'
+203:19: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+205:9: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+206:11: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+210:26: INFO: tf.metrics.mean_iou requires manual check. tf.metrics have been replaced with object oriented versions in TF 2.0 and after. The metric function calls have been converted to compat.v1 for backward compatibility. Please update these calls to the TF 2.0 versions.
+210:26: INFO: Renamed 'tf.metrics.mean_iou' to 'tf.compat.v1.metrics.mean_iou'
+218:11: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+218:46: INFO: Renamed 'tf.local_variables_initializer' to 'tf.compat.v1.local_variables_initializer'
+221:5: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+261:8: INFO: Renamed 'tf.get_default_graph' to 'tf.compat.v1.get_default_graph'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/depth_utils.py'
+ outputting to './omeganet_tfv2/helpers/depth_utils.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/__init__.py'
+ outputting to './omeganet_tfv2/helpers/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/utilities.py'
+ outputting to './omeganet_tfv2/helpers/utilities.py'
+--------------------------------------------------------------------------------
+
+160:12: INFO: Renamed 'tf.py_func' to 'tf.compat.v1.py_func'
+182:12: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+216:11: INFO: Added keywords to args of function 'tf.reduce_min'
+217:11: INFO: Added keywords to args of function 'tf.reduce_max'
+224:14: INFO: Changed tf.to_int32 call to tf.cast(..., dtype=tf.int32).
+253:45: INFO: Added keywords to args of function 'tf.shape'
+259:19: INFO: Added keywords to args of function 'tf.reduce_max'
+260:18: INFO: Added keywords to args of function 'tf.reduce_sum'
+263:11: INFO: Renamed 'tf.mod' to 'tf.math.floormod'
+277:8: INFO: Added keywords to args of function 'tf.shape'
+278:8: INFO: Changed tf.to_int32 call to tf.cast(..., dtype=tf.int32).
+279:8: INFO: Changed tf.to_int32 call to tf.cast(..., dtype=tf.int32).
+300:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+310:16: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+310:28: INFO: Added keywords to args of function 'tf.shape'
+312:11: INFO: Removed argument align_corners for function tf.image.resize_images
+312:11: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+314:16: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/bilinear_sampler.py'
+ outputting to './omeganet_tfv2/helpers/bilinear_sampler.py'
+--------------------------------------------------------------------------------
+
+26:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+27:12: INFO: Added keywords to args of function 'tf.shape'
+73:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+99:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+103:31: INFO: Renamed 'tf.matrix_inverse' to 'tf.linalg.inv'
+119:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+130:15: INFO: Added keywords to args of function 'tf.transpose'
+145:8: INFO: Added keywords to args of function 'tf.transpose'
+170:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+172:27: INFO: Added keywords to args of function 'tf.transpose'
+191:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+196:19: INFO: Renamed 'tf.matrix_inverse' to 'tf.linalg.inv'
+199:27: INFO: Added keywords to args of function 'tf.transpose'
+229:14: INFO: Added keywords to args of function 'tf.transpose'
+236:9: INFO: `name` passed to `name_scope`. Because you may be re-entering an existing scope, it is not safe to convert automatically,  the v2 name_scope does not support re-entering scopes by name.
+
+236:9: INFO: Renamed 'tf.name_scope' to 'tf.compat.v1.name_scope'
+251:24: INFO: Added keywords to args of function 'tf.shape'
+252:24: INFO: Added keywords to args of function 'tf.shape'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/flow_tool/flowlib.py'
+ outputting to './omeganet_tfv2/helpers/flow_tool/flowlib.py'
+--------------------------------------------------------------------------------
+
+75:4: WARNING: *.save requires manual check. (This warning is only applicable if the code saves a tf.Keras model) Keras model.save now saves to the Tensorflow SavedModel format by default, instead of HDF5. To continue saving to HDF5, add the argument save_format='h5' to the save() function.
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/helpers/flow_tool/__init__.py'
+ outputting to './omeganet_tfv2/helpers/flow_tool/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/options/option_train.py'
+ outputting to './omeganet_tfv2/options/option_train.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/options/__init__.py'
+ outputting to './omeganet_tfv2/options/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/options/option_base.py'
+ outputting to './omeganet_tfv2/options/option_base.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/complete_network.py'
+ outputting to './omeganet_tfv2/networks/complete_network.py'
+--------------------------------------------------------------------------------
+
+79:18: INFO: Renamed 'tf.AUTO_REUSE' to 'tf.compat.v1.AUTO_REUSE'
+92:54: INFO: Renamed 'tf.where' to 'tf.compat.v1.where'
+105:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+110:21: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+111:23: INFO: Added keywords to args of function 'tf.argmax'
+119:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+134:25: INFO: Added keywords to args of function 'tf.reduce_sum'
+134:25: INFO: Renamed keyword argument for tf.reduce_sum from keep_dims to keepdims
+144:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+158:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+162:38: INFO: Added keywords to args of function 'tf.norm'
+162:38: INFO: Renamed keyword argument for tf.norm from keep_dims to keepdims
+165:36: INFO: Added keywords to args of function 'tf.norm'
+165:36: INFO: Renamed keyword argument for tf.norm from keep_dims to keepdims
+180:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+183:27: INFO: Renamed 'tf.trainable_variables' to 'tf.compat.v1.trainable_variables'
+193:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/general_network.py'
+ outputting to './omeganet_tfv2/networks/general_network.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/ops.py'
+ outputting to './omeganet_tfv2/networks/ops.py'
+--------------------------------------------------------------------------------
+
+28:11: INFO: Changed tf.image.resize_nearest_neighbor call to tf.image.resize(..., method=tf.image.ResizeMethod.NEAREST_NEIGHBOR).
+38:24: INFO: Multiplying scale arg of tf.contrib.layers.l2_regularizer by half to what tf.keras.regularizers.l2 expects.
+
+51:17: INFO: Added keywords to args of function 'tf.pad'
+55:11: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+76:24: INFO: Multiplying scale arg of tf.contrib.layers.l2_regularizer by half to what tf.keras.regularizers.l2 expects.
+
+106:14: INFO: Added keywords to args of function 'tf.norm'
+111:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+113:20: INFO: Added keywords to args of function 'tf.reduce_mean'
+130:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+131:34: INFO: Added keywords to args of function 'tf.reduce_sum'
+132:15: INFO: Added keywords to args of function 'tf.reduce_sum'
+137:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+138:34: INFO: Added keywords to args of function 'tf.reduce_sum'
+139:15: INFO: Added keywords to args of function 'tf.reduce_sum'
+145:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+151:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+154:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+155:21: INFO: Changed tf.image.resize_bilinear call to tf.image.resize(..., method=tf.image.ResizeMethod.BILINEAR).
+167:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+178:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/__init__.py'
+ outputting to './omeganet_tfv2/networks/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/baseline.py'
+ outputting to './omeganet_tfv2/networks/baseline.py'
+--------------------------------------------------------------------------------
+
+75:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+83:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+96:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+109:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+110:25: INFO: Changed tf.image.resize_bilinear call to tf.image.resize(..., method=tf.image.ResizeMethod.BILINEAR).
+124:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+125:19: INFO: Changed tf.image.resize_bilinear call to tf.image.resize(..., method=tf.image.ResizeMethod.BILINEAR).
+133:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+134:23: INFO: Renamed 'tf.image.resize_images' to 'tf.image.resize'
+143:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+166:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+178:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+179:30: INFO: Renamed 'tf.trainable_variables' to 'tf.compat.v1.trainable_variables'
+182:25: INFO: Renamed 'tf.all_variables' to 'tf.compat.v1.all_variables'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/network_components.py'
+ outputting to './omeganet_tfv2/networks/network_components.py'
+--------------------------------------------------------------------------------
+
+38:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+58:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+68:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+77:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+86:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+95:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+106:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+110:23: INFO: Added keywords to args of function 'tf.reduce_mean'
+114:12: INFO: Added keywords to args of function 'tf.shape'
+115:12: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+116:12: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+130:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+131:21: INFO: Added keywords to args of function 'tf.reduce_mean'
+133:12: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+143:12: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+143:24: INFO: Added keywords to args of function 'tf.convert_to_tensor'
+147:16: ERROR: Using member tf.contrib.layers.conv2d in deprecated module tf.contrib. tf.contrib.layers.conv2d cannot be converted automatically. tf.contrib will not be distributed with TensorFlow 2.0, please consider an alternative in non-contrib TensorFlow, a community-maintained repository such as tensorflow/addons, or fork the required code.
+160:12: INFO: Changed tf.to_float call to tf.cast(..., dtype=tf.float32).
+160:24: INFO: Added keywords to args of function 'tf.convert_to_tensor'
+164:21: INFO: Added keywords to args of function 'tf.shape'
+174:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+174:55: INFO: Renamed 'tf.AUTO_REUSE' to 'tf.compat.v1.AUTO_REUSE'
+179:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+180:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+184:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+187:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+192:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+193:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+197:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+202:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+207:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+208:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+212:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+217:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+222:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+223:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+227:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+232:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+237:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+238:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+242:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+247:17: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+256:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+256:40: INFO: Renamed 'tf.AUTO_REUSE' to 'tf.compat.v1.AUTO_REUSE'
+260:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+264:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+269:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+273:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+278:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+282:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+287:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+291:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+296:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+300:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+311:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+316:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+320:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+324:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+328:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+338:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+339:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+343:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+352:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+361:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+375:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+376:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+380:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+389:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+398:13: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/selflow/selflow_network.py'
+ outputting to './omeganet_tfv2/networks/selflow/selflow_network.py'
+--------------------------------------------------------------------------------
+
+19:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+59:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+109:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+134:17: INFO: Renamed 'tf.extract_image_patches' to 'tf.image.extract_patches'
+141:18: INFO: Added keywords to args of function 'tf.reduce_sum'
+163:18: INFO: Added keywords to args of function 'tf.shape'
+216:14: INFO: Added keywords to args of function 'tf.shape'
+247:23: INFO: Added keywords to args of function 'tf.shape'
+319:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/selflow/__init__.py'
+ outputting to './omeganet_tfv2/networks/selflow/__init__.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file './omeganet/networks/selflow/warp.py'
+ outputting to './omeganet_tfv2/networks/selflow/warp.py'
+--------------------------------------------------------------------------------
+
+17:12: INFO: Added keywords to args of function 'tf.shape'
+--------------------------------------------------------------------------------
+

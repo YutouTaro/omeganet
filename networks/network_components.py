@@ -35,7 +35,7 @@ def feature_extractor(src_img_1, tgt_img, src_img_2, is_training, name=None):
     final_name = "feature_extractor"
     if name is not None:
         final_name = "{}_{}".format(final_name, name)
-    with tf.variable_scope(final_name):
+    with tf.compat.v1.variable_scope(final_name):
         pyramid_src_img_1 = build_pyramid(
             src_img_1, normalizer_params=batch_norm_params
         )
@@ -55,7 +55,7 @@ def CameraNet(features, is_training):
         :return pose_final: tensor with shape (1, 2, 6)
         :return intrinsics_mat: tensor with shape (1, 1, 3, 3)
     """
-    with tf.variable_scope("pose_net"):
+    with tf.compat.v1.variable_scope("pose_net"):
         batch_norm_params = {"is_training": is_training}
 
         pyramid_src_img_1 = features[0]
@@ -65,7 +65,7 @@ def CameraNet(features, is_training):
             [pyramid_src_img_1[4], pyramid_tgt_img[4], pyramid_src_img_2[4]], axis=3
         )
 
-        with tf.variable_scope("conv1_a"):
+        with tf.compat.v1.variable_scope("conv1_a"):
             conv1_a = conv2d(
                 input_batch,
                 NUM_FEATURES * 8,
@@ -74,7 +74,7 @@ def CameraNet(features, is_training):
                 normalizer_params=batch_norm_params,
                 activation_fn=tf.nn.relu,
             )
-        with tf.variable_scope("conv1_b"):
+        with tf.compat.v1.variable_scope("conv1_b"):
             conv1_b = conv2d(
                 conv1_a,
                 NUM_FEATURES * 8,
@@ -83,7 +83,7 @@ def CameraNet(features, is_training):
                 normalizer_params=batch_norm_params,
                 activation_fn=tf.nn.relu,
             )
-        with tf.variable_scope("conv2_a"):
+        with tf.compat.v1.variable_scope("conv2_a"):
             conv2_a = conv2d(
                 conv1_b,
                 NUM_FEATURES * 16,
@@ -92,7 +92,7 @@ def CameraNet(features, is_training):
                 normalizer_params=batch_norm_params,
                 activation_fn=tf.nn.relu,
             )
-        with tf.variable_scope("conv2_b"):
+        with tf.compat.v1.variable_scope("conv2_b"):
             conv2_b = conv2d(
                 conv2_a,
                 NUM_FEATURES * 16,
@@ -103,17 +103,17 @@ def CameraNet(features, is_training):
             )
 
         # POSE ESTIMATOR
-        with tf.variable_scope("pred"):
+        with tf.compat.v1.variable_scope("pred"):
             pose_pred = conv2d(
                 conv2_b, 12, 1, 1, normalizer_fn=None, activation_fn=None
             )
-            pose_avg = tf.reduce_mean(pose_pred, [1, 2])
+            pose_avg = tf.reduce_mean(input_tensor=pose_pred, axis=[1, 2])
             pose_final = POSE_SCALING * tf.reshape(pose_avg, [-1, 2, 6])
 
         # INTRINSIC ESTIMATOR
-        s = tf.shape(pyramid_tgt_img[0])
-        h = tf.to_float(s[1])
-        w = tf.to_float(s[2])
+        s = tf.shape(input=pyramid_tgt_img[0])
+        h = tf.cast(s[1], dtype=tf.float32)
+        w = tf.cast(s[2], dtype=tf.float32)
         intrinsics_mat = _estimate_intrinsics(conv2_b, w, h)
 
         return pose_final, intrinsics_mat
@@ -127,8 +127,8 @@ def _estimate_intrinsics(bottleneck, image_width, image_height):
     
     :return intrinsic_mat: tensor with shape (1, 1, 3, 3)
     """
-    with tf.variable_scope("intrinsics"):
-        bottleneck = tf.reduce_mean(bottleneck, axis=[1, 2], keepdims=True)
+    with tf.compat.v1.variable_scope("intrinsics"):
+        bottleneck = tf.reduce_mean(input_tensor=bottleneck, axis=[1, 2], keepdims=True)
         focal_lengths = tf.squeeze(
             tf.contrib.layers.conv2d(
                 bottleneck,
@@ -140,7 +140,7 @@ def _estimate_intrinsics(bottleneck, image_width, image_height):
                 scope="foci",
             ),
             axis=(1, 2),
-        ) * tf.to_float(tf.convert_to_tensor([[image_width, image_height]]))
+        ) * tf.cast(tf.convert_to_tensor(value=[[image_width, image_height]]), dtype=tf.float32)
 
         offsets = (
             tf.squeeze(
@@ -157,11 +157,11 @@ def _estimate_intrinsics(bottleneck, image_width, image_height):
                 axis=(1, 2),
             )
             + 0.5
-        ) * tf.to_float(tf.convert_to_tensor([[image_width, image_height]]))
+        ) * tf.cast(tf.convert_to_tensor(value=[[image_width, image_height]]), dtype=tf.float32)
 
         foci = tf.linalg.diag(focal_lengths)
         intrinsic_mat = tf.concat([foci, tf.expand_dims(offsets, -1)], axis=2)
-        batch_size = tf.shape(bottleneck)[0]
+        batch_size = tf.shape(input=bottleneck)[0]
         last_row = tf.tile([[[0.0, 0.0, 1.0]]], [batch_size, 1, 1])
         intrinsic_mat = tf.concat([intrinsic_mat, last_row], axis=1)
         intrinsic_mat = tf.expand_dims(intrinsic_mat, axis=1)
@@ -171,80 +171,80 @@ def _estimate_intrinsics(bottleneck, image_width, image_height):
 def DSNet(pyramid_tgt_img, classes, is_training):
     """DSNet
     """
-    with tf.variable_scope("monocular_depthnet", reuse=tf.AUTO_REUSE):
+    with tf.compat.v1.variable_scope("monocular_depthnet", reuse=tf.compat.v1.AUTO_REUSE):
 
         batch_norm_params = {"is_training": is_training}
 
         # SCALE 5
-        with tf.variable_scope("L5"):
-            with tf.variable_scope("estimator"):
+        with tf.compat.v1.variable_scope("L5"):
+            with tf.compat.v1.variable_scope("estimator"):
                 conv5 = build_estimator(
                     pyramid_tgt_img[5], normalizer_params=batch_norm_params
                 )
-            with tf.variable_scope("disparity"):
+            with tf.compat.v1.variable_scope("disparity"):
                 disp5 = get_disp(conv5, normalizer_params=batch_norm_params)
                 updisp5 = depth_upsampling(disp5, 1)
-            with tf.variable_scope("upsampler"):
+            with tf.compat.v1.variable_scope("upsampler"):
                 upconv5 = bilinear_upsampling_by_convolution(
                     conv5, 2, normalizer_params=batch_norm_params
                 )
         # SCALE 4
-        with tf.variable_scope("L4"):
-            with tf.variable_scope("estimator"):
+        with tf.compat.v1.variable_scope("L4"):
+            with tf.compat.v1.variable_scope("estimator"):
                 conv4 = build_estimator(
                     pyramid_tgt_img[4], upconv5, normalizer_params=batch_norm_params
                 )
-            with tf.variable_scope("disparity"):
+            with tf.compat.v1.variable_scope("disparity"):
                 disp4 = (
                     get_disp(conv4, normalizer_params=batch_norm_params) + updisp5[0]
                 )
                 updisp4 = depth_upsampling(disp4, 1)
-            with tf.variable_scope("upsampler"):
+            with tf.compat.v1.variable_scope("upsampler"):
                 upconv4 = bilinear_upsampling_by_convolution(
                     conv4, 2, normalizer_params=batch_norm_params
                 )
         # SCALE 3
-        with tf.variable_scope("L3"):
-            with tf.variable_scope("estimator"):
+        with tf.compat.v1.variable_scope("L3"):
+            with tf.compat.v1.variable_scope("estimator"):
                 conv3 = build_estimator(
                     pyramid_tgt_img[3], upconv4, normalizer_params=batch_norm_params
                 )
-            with tf.variable_scope("disparity"):
+            with tf.compat.v1.variable_scope("disparity"):
                 disp3 = (
                     get_disp(conv3, normalizer_params=batch_norm_params) + updisp4[0]
                 )
                 updisp3 = depth_upsampling(disp3, 1)
-            with tf.variable_scope("upsampler"):
+            with tf.compat.v1.variable_scope("upsampler"):
                 upconv3 = bilinear_upsampling_by_convolution(
                     conv3, 2, normalizer_params=batch_norm_params
                 )
         # SCALE 2
-        with tf.variable_scope("L2"):
-            with tf.variable_scope("estimator"):
+        with tf.compat.v1.variable_scope("L2"):
+            with tf.compat.v1.variable_scope("estimator"):
                 conv2 = build_estimator(
                     pyramid_tgt_img[2], upconv3, normalizer_params=batch_norm_params
                 )
-            with tf.variable_scope("disparity"):
+            with tf.compat.v1.variable_scope("disparity"):
                 disp2 = (
                     get_disp(conv2, normalizer_params=batch_norm_params) + updisp3[0]
                 )
                 updisp2 = depth_upsampling(disp2, 1)
-            with tf.variable_scope("upsampler"):
+            with tf.compat.v1.variable_scope("upsampler"):
                 upconv2 = bilinear_upsampling_by_convolution(
                     conv2, 2, normalizer_params=batch_norm_params
                 )
         # SCALE 1
-        with tf.variable_scope("L1"):
-            with tf.variable_scope("estimator"):
+        with tf.compat.v1.variable_scope("L1"):
+            with tf.compat.v1.variable_scope("estimator"):
                 conv1 = build_estimator(
                     pyramid_tgt_img[1], upconv2, normalizer_params=batch_norm_params
                 )
-            with tf.variable_scope("disparity"):
+            with tf.compat.v1.variable_scope("disparity"):
                 disp1 = (
                     get_disp(conv1, normalizer_params=batch_norm_params) + updisp2[0]
                 )
 
-            with tf.variable_scope("semantic"):
+            with tf.compat.v1.variable_scope("semantic"):
                 sem1 = get_semantic(conv1, classes, normalizer_params=batch_norm_params)
 
         return [disp1, disp2, disp3, disp4, disp5], sem1
@@ -253,51 +253,51 @@ def DSNet(pyramid_tgt_img, classes, is_training):
 def build_pyramid(input_batch, normalizer_params=None, scope="img_pyramid"):
     """Pyramidal feature extractor
     """
-    with tf.variable_scope(scope, reuse=tf.AUTO_REUSE):
+    with tf.compat.v1.variable_scope(scope, reuse=tf.compat.v1.AUTO_REUSE):
         features = []
         features.append(input_batch)
 
-        with tf.variable_scope("conv1a"):
+        with tf.compat.v1.variable_scope("conv1a"):
             conv1a = conv2d(
                 input_batch, NUM_FEATURES, 3, 2, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv1b"):
+        with tf.compat.v1.variable_scope("conv1b"):
             conv1b = conv2d(
                 conv1a, NUM_FEATURES, 3, 1, normalizer_params=normalizer_params
             )
             features.append(conv1b)
-        with tf.variable_scope("conv2a"):
+        with tf.compat.v1.variable_scope("conv2a"):
             conv2a = conv2d(
                 conv1b, NUM_FEATURES * 2, 3, 2, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv2b"):
+        with tf.compat.v1.variable_scope("conv2b"):
             conv2b = conv2d(
                 conv2a, NUM_FEATURES * 2, 3, 1, normalizer_params=normalizer_params
             )
             features.append(conv2b)
-        with tf.variable_scope("conv3a"):
+        with tf.compat.v1.variable_scope("conv3a"):
             conv3a = conv2d(
                 conv2b, NUM_FEATURES * 4, 3, 2, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv3b"):
+        with tf.compat.v1.variable_scope("conv3b"):
             conv3b = conv2d(
                 conv3a, NUM_FEATURES * 4, 3, 1, normalizer_params=normalizer_params
             )
             features.append(conv3b)
-        with tf.variable_scope("conv4a"):
+        with tf.compat.v1.variable_scope("conv4a"):
             conv4a = conv2d(
                 conv3b, NUM_FEATURES * 8, 3, 2, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv4b"):
+        with tf.compat.v1.variable_scope("conv4b"):
             conv4b = conv2d(
                 conv4a, NUM_FEATURES * 8, 3, 1, normalizer_params=normalizer_params
             )
             features.append(conv4b)
-        with tf.variable_scope("conv5a"):
+        with tf.compat.v1.variable_scope("conv5a"):
             conv5a = conv2d(
                 conv4b, NUM_FEATURES * 16, 3, 2, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv5b"):
+        with tf.compat.v1.variable_scope("conv5b"):
             conv5b = conv2d(
                 conv5a, NUM_FEATURES * 16, 3, 1, normalizer_params=normalizer_params
             )
@@ -308,24 +308,24 @@ def build_pyramid(input_batch, normalizer_params=None, scope="img_pyramid"):
 def build_estimator(features, upsampled_disp=None, normalizer_params=None):
     """Single scale estimator
     """
-    with tf.variable_scope("build_estimator"):
+    with tf.compat.v1.variable_scope("build_estimator"):
         if upsampled_disp is not None:
             disp2 = tf.concat([features, upsampled_disp], -1)
         else:
             disp2 = features
-        with tf.variable_scope("disp-3"):
+        with tf.compat.v1.variable_scope("disp-3"):
             disp3 = conv2d(
                 disp2, NUM_FEATURES * 4, 3, 1, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("disp-4"):
+        with tf.compat.v1.variable_scope("disp-4"):
             disp4 = conv2d(
                 disp3, NUM_FEATURES * 3, 3, 1, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("disp-5"):
+        with tf.compat.v1.variable_scope("disp-5"):
             disp5 = conv2d(
                 disp4, NUM_FEATURES * 2, 3, 1, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("disp-6"):
+        with tf.compat.v1.variable_scope("disp-6"):
             disp6 = conv2d(
                 disp5, NUM_FEATURES, 3, 1, normalizer_params=normalizer_params
             )
@@ -335,12 +335,12 @@ def build_estimator(features, upsampled_disp=None, normalizer_params=None):
 def get_disp(x, normalizer_params=None, rates=[1, 1]):
     """Disparity prediction layer
     """
-    with tf.variable_scope("disparity_estimator"):
-        with tf.variable_scope("conv1"):
+    with tf.compat.v1.variable_scope("disparity_estimator"):
+        with tf.compat.v1.variable_scope("conv1"):
             conv1 = conv2d(
                 x, NUM_FEATURES * 4, 3, 1, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv2"):
+        with tf.compat.v1.variable_scope("conv2"):
             conv2 = conv2d(
                 conv1,
                 NUM_FEATURES * 2,
@@ -349,7 +349,7 @@ def get_disp(x, normalizer_params=None, rates=[1, 1]):
                 normalizer_params=normalizer_params,
                 rate=rates[0],
             )
-        with tf.variable_scope("conv3"):
+        with tf.compat.v1.variable_scope("conv3"):
             conv3 = conv2d(
                 conv2,
                 NUM_FEATURES,
@@ -358,7 +358,7 @@ def get_disp(x, normalizer_params=None, rates=[1, 1]):
                 normalizer_params=normalizer_params,
                 rate=rates[1],
             )
-        with tf.variable_scope("disparity"):
+        with tf.compat.v1.variable_scope("disparity"):
             disparity = (
                 DISP_SCALING
                 * conv2d(
@@ -372,12 +372,12 @@ def get_disp(x, normalizer_params=None, rates=[1, 1]):
 def get_semantic(x, classes, normalizer_params=None, rates=[1, 1]):
     """Semantic estimator layer
     """
-    with tf.variable_scope("semantic_estimator"):
-        with tf.variable_scope("conv1"):
+    with tf.compat.v1.variable_scope("semantic_estimator"):
+        with tf.compat.v1.variable_scope("conv1"):
             conv1 = conv2d(
                 x, NUM_FEATURES * 4, 3, 1, normalizer_params=normalizer_params
             )
-        with tf.variable_scope("conv2"):
+        with tf.compat.v1.variable_scope("conv2"):
             conv2 = conv2d(
                 conv1,
                 NUM_FEATURES * 2,
@@ -386,7 +386,7 @@ def get_semantic(x, classes, normalizer_params=None, rates=[1, 1]):
                 normalizer_params=normalizer_params,
                 rate=rates[0],
             )
-        with tf.variable_scope("conv3"):
+        with tf.compat.v1.variable_scope("conv3"):
             conv3 = conv2d(
                 conv2,
                 NUM_FEATURES,
@@ -395,6 +395,6 @@ def get_semantic(x, classes, normalizer_params=None, rates=[1, 1]):
                 normalizer_params=normalizer_params,
                 rate=rates[1],
             )
-        with tf.variable_scope("disparity"):
+        with tf.compat.v1.variable_scope("disparity"):
             sem = conv2d(conv3, classes, 3, 1, normalizer_params=normalizer_params)
         return sem

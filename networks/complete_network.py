@@ -76,7 +76,7 @@ class OmegaNet(GeneralNetwork):
             self.src_img_2,
             train=False,
             trainable=load_flow,
-            reuse=tf.AUTO_REUSE,
+            reuse=tf.compat.v1.AUTO_REUSE,
             regularizer=None,
             is_scale=True,
             scope="superflow",
@@ -89,7 +89,7 @@ class OmegaNet(GeneralNetwork):
         moving_src2_tgt = self.build_moving_probability_mask(
             self.__optical_flow_src2_tgt, self.__sflow_src2_tgt
         )
-        final_motion_mask = self.__dynamic_tgt_mask * tf.where(
+        final_motion_mask = self.__dynamic_tgt_mask * tf.compat.v1.where(
             moving_src2_tgt > self.params.tau,
             tf.ones_like(moving_src2_tgt),
             tf.zeros_like(moving_src2_tgt),
@@ -102,13 +102,13 @@ class OmegaNet(GeneralNetwork):
             :param height: height of image. Optional (default is params.height)
             :param width: width of image. Optional (default is params.width)
         """
-        with tf.variable_scope("prepare_semantic"):
+        with tf.compat.v1.variable_scope("prepare_semantic"):
             if height is None:
                 height = self.params.height
             if width is None:
                 width = self.params.width
-            logits = tf.image.resize_images(logits, [height, width])
-            semantic = tf.argmax(logits, axis=-1)
+            logits = tf.image.resize(logits, [height, width])
+            semantic = tf.argmax(input=logits, axis=-1)
             semantic = tf.expand_dims(semantic, -1)
             semantic = tf.cast(semantic, tf.float32)
             return semantic
@@ -116,7 +116,7 @@ class OmegaNet(GeneralNetwork):
     def build_outputs(self):
         """Build outputs of the network
         """
-        with tf.variable_scope("build_outputs"):
+        with tf.compat.v1.variable_scope("build_outputs"):
 
             self.optical_flow = self.__optical_flow_src2_tgt
             self.disp = self.baselineNet.disp_tgt
@@ -132,7 +132,7 @@ class OmegaNet(GeneralNetwork):
         normalize_a = tf.nn.l2_normalize(a, -1)
         normalize_b = tf.nn.l2_normalize(b, -1)
         cos_similarity = tf.reduce_sum(
-            tf.multiply(normalize_a, normalize_b), axis=-1, keep_dims=True
+            input_tensor=tf.multiply(normalize_a, normalize_b), axis=-1, keepdims=True
         )
         return (1.0 - cos_similarity) / 2.0
 
@@ -141,7 +141,7 @@ class OmegaNet(GeneralNetwork):
             :param rigid_flow: Tensor with rigid flow
             :return mask: mask of occlusions due to rigid camera motion
         """
-        with tf.variable_scope("get_occlusion_mask_from_rigid_flow"):
+        with tf.compat.v1.variable_scope("get_occlusion_mask_from_rigid_flow"):
             b, h, w, _ = rigid_flow.shape
             rigid_flow = tf.stop_gradient(rigid_flow)
             mask = bilinear_sampler.flow_warp(
@@ -155,15 +155,15 @@ class OmegaNet(GeneralNetwork):
             Masks of moving objects
             If the object is moving, this value should be low.
         """
-        with tf.variable_scope("build_moving_probability_mask"):
+        with tf.compat.v1.variable_scope("build_moving_probability_mask"):
             epsylon = 1e-7
             optical_flow = tf.stop_gradient(optical_flow)
             rigid_flow = tf.stop_gradient(rigid_flow)
             normalized_optical_flow = tf.norm(
-                optical_flow, axis=-1, keep_dims=True, name="optical_flow_norm"
+                tensor=optical_flow, axis=-1, keepdims=True, name="optical_flow_norm"
             )
             normalized_rigid_flow = tf.norm(
-                rigid_flow, axis=-1, keep_dims=True, name="rigid_flow_norm"
+                tensor=rigid_flow, axis=-1, keepdims=True, name="rigid_flow_norm"
             )
             cosine_distance = self.tf_cosine_distance(optical_flow, rigid_flow)
             ratio = (
@@ -177,10 +177,10 @@ class OmegaNet(GeneralNetwork):
         """Load network params.
             In particular, OmegaNet relies on DSNet, Camnet and self-distilled OFNet
         """
-        with tf.variable_scope("get_network_params"):
+        with tf.compat.v1.variable_scope("get_network_params"):
             baseline_vars = self.baselineNet.get_network_params()
             reflownet_vars = [
-                x for x in tf.trainable_variables() if "superflow" in x.name
+                x for x in tf.compat.v1.trainable_variables() if "superflow" in x.name
             ]
             return baseline_vars + reflownet_vars
 
@@ -190,7 +190,7 @@ class OmegaNet(GeneralNetwork):
            :return dynamic_tgt_mask: mask of potentially dinamyc objects
            :return static_tgt_mask: mask of potentially static objects
         """
-        with tf.variable_scope("build_semantic_masks"):
+        with tf.compat.v1.variable_scope("build_semantic_masks"):
             dynamic_tgt_mask = self.__priors
             static_tgt_mask = 1.0 - dynamic_tgt_mask
             return dynamic_tgt_mask, static_tgt_mask

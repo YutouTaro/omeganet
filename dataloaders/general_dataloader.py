@@ -26,7 +26,7 @@ dataloader_parameters = namedtuple("dataloader_parameters", "height, width, task
 
 
 def string_length_tf(t):
-    return tf.py_func(len, [t], [tf.int64])
+    return tf.compat.v1.py_func(len, [t], [tf.int64])
 
 
 class GeneralDataloader(object):
@@ -42,12 +42,6 @@ class GeneralDataloader(object):
         self.src_img_2_batch = None
         self.tgt_img_batch = None
 
-        # get number of samples
-        self.num_samples = 0
-        with open(self.filenames_file) as fin:
-            filename = fin.readline()
-            if isfile(join(self.datapath, filename)):
-                self.num_samples += 1
         self.build()
 
     def build(self):
@@ -60,22 +54,22 @@ class GeneralDataloader(object):
         """Read an image from the file system
             :params image_path: string, path to image
         """
-        with tf.variable_scope("read_image"):
+        with tf.compat.v1.variable_scope("read_image"):
             path_length = string_length_tf(image_path)[0]
-            file_extension = tf.substr(image_path, path_length - 3, 3)
+            file_extension = tf.strings.substr(input=image_path, pos=path_length - 3, len=3)
             file_cond = tf.equal(file_extension, "jpg")
 
             image = tf.cond(
-                file_cond,
-                lambda: tf.image.decode_jpeg(tf.read_file(image_path)),
-                lambda: tf.image.decode_png(tf.read_file(image_path)),
+                pred=file_cond,
+                true_fn=lambda: tf.image.decode_jpeg(tf.io.read_file(image_path)),
+                false_fn=lambda: tf.image.decode_png(tf.io.read_file(image_path)),
             )
 
-            self.image_w = tf.shape(image)[1]
-            self.image_h = tf.shape(image)[0]
+            self.image_w = tf.shape(input=image)[1]
+            self.image_h = tf.shape(input=image)[0]
 
             image = tf.image.convert_image_dtype(image, tf.float32)
-            image = tf.image.resize_images(
+            image = tf.image.resize(
                 image,
                 [self.params.height, self.params.width],
                 tf.image.ResizeMethod.AREA,

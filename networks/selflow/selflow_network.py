@@ -16,7 +16,7 @@ def feature_extractor(
     regularizer=None,
     name="feature_extractor",
 ):
-    with tf.variable_scope(name, reuse=reuse, regularizer=regularizer):
+    with tf.compat.v1.variable_scope(name, reuse=reuse, regularizer=regularizer):
         with slim.arg_scope(
             [slim.conv2d],
             activation_fn=lrelu,
@@ -56,7 +56,7 @@ def context_network(
     name="context_network",
 ):
     x_input = tf.concat([x, flow], axis=-1)
-    with tf.variable_scope(name, reuse=reuse, regularizer=regularizer):
+    with tf.compat.v1.variable_scope(name, reuse=reuse, regularizer=regularizer):
         with slim.arg_scope(
             [slim.conv2d],
             activation_fn=lrelu,
@@ -106,7 +106,7 @@ def estimator_network(
     name="estimator",
 ):
     net_input = tf.concat([cost_volume, x1, flow], axis=-1)
-    with tf.variable_scope(name, reuse=reuse, regularizer=regularizer):
+    with tf.compat.v1.variable_scope(name, reuse=reuse, regularizer=regularizer):
         with slim.arg_scope(
             [slim.conv2d],
             activation_fn=lrelu,
@@ -131,14 +131,14 @@ def compute_cost_volume(x1, x2, H, W, channel, d=9):
     x1 = tf.nn.l2_normalize(x1, axis=3)
     x2 = tf.nn.l2_normalize(x2, axis=3)
 
-    x2_patches = tf.extract_image_patches(
+    x2_patches = tf.image.extract_patches(
         x2, [1, d, d, 1], strides=[1, 1, 1, 1], rates=[1, 1, 1, 1], padding="SAME"
     )
     x2_patches = tf.reshape(x2_patches, [-1, H, W, d, d, channel])
     x1_reshape = tf.reshape(x1, [-1, H, W, 1, 1, channel])
     x1_dot_x2 = tf.multiply(x1_reshape, x2_patches)
 
-    cost_volume = tf.reduce_sum(x1_dot_x2, axis=-1)
+    cost_volume = tf.reduce_sum(input_tensor=x1_dot_x2, axis=-1)
     # cost_volume = tf.reduce_mean(x1_dot_x2, axis=-1)
     cost_volume = tf.reshape(cost_volume, [-1, H, W, d * d])
     return cost_volume
@@ -160,7 +160,7 @@ def estimator(
     if train:
         x_shape = x1.get_shape().as_list()
     else:
-        x_shape = tf.shape(x1)
+        x_shape = tf.shape(input=x1)
     H = x_shape[1]
     W = x_shape[2]
     channel = x_shape[3]
@@ -213,7 +213,7 @@ def pyramid_processing_three_frame(
     regularizer=None,
     is_scale=True,
 ):
-    x_shape = tf.shape(tgt_features["conv6_2"])
+    x_shape = tf.shape(input=tgt_features["conv6_2"])
     initial_flow_fw = tf.zeros(
         [x_shape[0], x_shape[1], x_shape[2], 2],
         dtype=tf.float32,
@@ -244,7 +244,7 @@ def pyramid_processing_three_frame(
     for i in range(4):
         feature_name = "conv%d_2" % (5 - i)
         level = "level_%d" % (5 - i)
-        feature_size = tf.shape(tgt_features[feature_name])[1:3]
+        feature_size = tf.shape(input=tgt_features[feature_name])[1:3]
 
         initial_flow_fw = flow_resize(
             flow_fw["level_%d" % (6 - i)], feature_size, is_scale=is_scale
@@ -316,7 +316,7 @@ def flownet(
             forward flow between tgt and src2, backward flow between tgt and src1
             Both flows are tgt aligned
     """
-    with tf.variable_scope(scope, reuse=reuse):
+    with tf.compat.v1.variable_scope(scope, reuse=reuse):
         src1_features = feature_extractor(
             src1,
             train=train,

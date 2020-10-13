@@ -23,8 +23,8 @@ def euler2mat(z, y, x):
         Returns:
             Rotation matrix corresponding to the euler angles -- size = [B, N, 3, 3]
     """
-    with tf.variable_scope("euler2mat"):
-        B = tf.shape(z)[0]
+    with tf.compat.v1.variable_scope("euler2mat"):
+        B = tf.shape(input=z)[0]
         N = 1
         z = tf.clip_by_value(z, -np.pi, np.pi)
         y = tf.clip_by_value(y, -np.pi, np.pi)
@@ -70,7 +70,7 @@ def pose_vec2mat(vec):
         Returns:
             A transformation matrix -- [B, 4, 4]
     """
-    with tf.variable_scope("vec2mat"):
+    with tf.compat.v1.variable_scope("vec2mat"):
         batch_size, _ = vec.get_shape().as_list()
         translation = tf.slice(vec, [0, 0], [-1, 3])
         translation = tf.expand_dims(translation, -1)
@@ -96,11 +96,11 @@ def pixel2cam(depth, pixel_coords, intrinsics, is_homogeneous=True):
         Returns:
             Coords in the camera frame [batch, 3 (4 if homogeneous), height, width]
     """
-    with tf.variable_scope("pixel2cam"):
+    with tf.compat.v1.variable_scope("pixel2cam"):
         batch, height, width = depth.get_shape().as_list()
         depth = tf.reshape(depth, [batch, 1, -1])
         pixel_coords = tf.reshape(pixel_coords, [batch, 3, -1])
-        cam_coords = tf.matmul(tf.matrix_inverse(intrinsics), pixel_coords) * depth
+        cam_coords = tf.matmul(tf.linalg.inv(intrinsics), pixel_coords) * depth
         if is_homogeneous:
             ones = tf.ones([batch, 1, height * width])
             cam_coords = tf.concat([cam_coords, ones], axis=1)
@@ -116,7 +116,7 @@ def cam2pixel(cam_coords, proj):
         Returns:
             Pixel coordinates projected from the camera frame [batch, height, width, 2]
     """
-    with tf.variable_scope("cam2pixel"):
+    with tf.compat.v1.variable_scope("cam2pixel"):
         batch, _, height, width = cam_coords.get_shape().as_list()
         cam_coords = tf.reshape(cam_coords, [batch, 4, -1])
         unnormalized_pixel_coords = tf.matmul(proj, cam_coords)
@@ -127,7 +127,7 @@ def cam2pixel(cam_coords, proj):
         y_n = y_u / (z_u + 1e-10)
         pixel_coords = tf.concat([x_n, y_n], axis=1)
         pixel_coords = tf.reshape(pixel_coords, [batch, 2, height, width])
-        return tf.transpose(pixel_coords, perm=[0, 2, 3, 1])
+        return tf.transpose(a=pixel_coords, perm=[0, 2, 3, 1])
 
 
 def meshgrid(batch, height, width, is_homogeneous=True):
@@ -142,7 +142,7 @@ def meshgrid(batch, height, width, is_homogeneous=True):
     """
     x_t = tf.matmul(
         tf.ones(shape=tf.stack([height, 1])),
-        tf.transpose(tf.expand_dims(tf.linspace(-1.0, 1.0, width), 1), [1, 0]),
+        tf.transpose(a=tf.expand_dims(tf.linspace(-1.0, 1.0, width), 1), perm=[1, 0]),
     )
     y_t = tf.matmul(
         tf.expand_dims(tf.linspace(-1.0, 1.0, height), 1),
@@ -167,10 +167,10 @@ def flow_warp(src_img, flow):
         Returns:
             Source image inverse warped to the target image plane [batch, height_t, width_t, 3]
     """
-    with tf.variable_scope("flow_warp"):
+    with tf.compat.v1.variable_scope("flow_warp"):
         batch, height, width, _ = src_img.get_shape().as_list()
         tgt_pixel_coords = tf.transpose(
-            meshgrid(batch, height, width, False), [0, 2, 3, 1]
+            a=meshgrid(batch, height, width, False), perm=[0, 2, 3, 1]
         )
         src_pixel_coords = tgt_pixel_coords + flow
         output_img = bilinear_sampler(src_img, src_pixel_coords)
@@ -188,15 +188,15 @@ def compute_rigid_flow(depth, pose, intrinsics, reverse_pose=False):
         Returns:
             Rigid flow from target image to source image [batch, height_t, width_t, 2]
     """
-    with tf.variable_scope("compute_rigid_flow"):
+    with tf.compat.v1.variable_scope("compute_rigid_flow"):
         batch, height, width = depth.get_shape().as_list()
         # Convert pose vector to matrix
         pose = pose_vec2mat(pose)
         if reverse_pose:
-            pose = tf.matrix_inverse(pose)
+            pose = tf.linalg.inv(pose)
         # Construct pixel grid coordinates
         pixel_coords = meshgrid(batch, height, width)
-        tgt_pixel_coords = tf.transpose(pixel_coords[:, :2, :, :], [0, 2, 3, 1])
+        tgt_pixel_coords = tf.transpose(a=pixel_coords[:, :2, :, :], perm=[0, 2, 3, 1])
         # Convert pixel coordinates to the camera frame
         cam_coords = pixel2cam(depth, pixel_coords, intrinsics)
         # Construct a 4x4 intrinsic matrix
@@ -227,13 +227,13 @@ def bilinear_sampler(imgs, coords):
 
     def _repeat(x, n_repeats):
         rep = tf.transpose(
-            tf.expand_dims(tf.ones(shape=tf.stack([n_repeats,])), 1), [1, 0]
+            a=tf.expand_dims(tf.ones(shape=tf.stack([n_repeats,])), 1), perm=[1, 0]
         )
         rep = tf.cast(rep, "float32")
         x = tf.matmul(tf.reshape(x, (-1, 1)), rep)
         return tf.reshape(x, [-1])
 
-    with tf.name_scope("image_sampling"):
+    with tf.compat.v1.name_scope("image_sampling"):
         coords_x, coords_y = tf.split(coords, [1, 1], axis=3)
         inp_size = imgs.get_shape()
         coord_size = coords.get_shape()
@@ -248,8 +248,8 @@ def bilinear_sampler(imgs, coords):
         y0 = tf.floor(coords_y)
         y1 = y0 + 1
 
-        y_max = tf.cast(tf.shape(imgs)[1] - 1, "float32")
-        x_max = tf.cast(tf.shape(imgs)[2] - 1, "float32")
+        y_max = tf.cast(tf.shape(input=imgs)[1] - 1, "float32")
+        x_max = tf.cast(tf.shape(input=imgs)[2] - 1, "float32")
         # zero = tf.zeros([1], dtype='float32')
         zero = tf.constant(0, dtype=tf.float32)
 

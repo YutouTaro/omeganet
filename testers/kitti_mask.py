@@ -38,26 +38,26 @@ class Tester(GeneralTester):
             :param is_training: training_flag for Batchnorm
         """
         # SESSION
-        config = tf.ConfigProto(allow_soft_placement=True)
-        sess = tf.Session(config=config)
+        config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
+        sess = tf.compat.v1.Session(config=config)
 
         self.prepare()
         var_list = network.get_network_params()
-        saver = tf.train.Saver(var_list=var_list)
+        saver = tf.compat.v1.train.Saver(var_list=var_list)
 
         init_op = tf.group(
-            tf.global_variables_initializer(), tf.local_variables_initializer()
+            tf.compat.v1.global_variables_initializer(), tf.compat.v1.local_variables_initializer()
         )
         sess.run(init_op)
 
         coordinator = tf.train.Coordinator()
-        threads = tf.train.start_queue_runners(sess=sess, coord=coordinator)
+        threads = tf.compat.v1.train.start_queue_runners(sess=sess, coord=coordinator)
 
         saver.restore(sess, self.params.checkpoint_path)
 
         print(" [*] Load model: SUCCESS")
 
-        segmented_mask = tf.image.resize_images(
+        segmented_mask = tf.image.resize(
             network.motion_mask,
             [dataloader.image_h, dataloader.image_w],
             method=tf.image.ResizeMethod.NEAREST_NEIGHBOR,

@@ -115,7 +115,7 @@ def configure_network(network_params, dataloader_params):
         :return training_flag: bool placeholder. For Batchnorm
 
     """
-    training_flag = tf.placeholder(tf.bool)
+    training_flag = tf.compat.v1.placeholder(tf.bool)
     dataloader = dataloader_factory.get_dataloader(args.task)(
         datapath=args.datapath,
         filenames_file=args.filenames_file,
@@ -148,4 +148,4 @@ def main(_):
 
 
 if __name__ == "__main__":
-    tf.app.run()
+    tf.compat.v1.app.run()
