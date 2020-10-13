@@ -1,5 +1,6 @@
 import tensorflow as tf
-from tensorflow.contrib import slim
+# from tensorflow.contrib import slim
+import tf_slim as slim
 from helpers.utilities import flow_resize
 from networks.selflow.warp import tf_warp
 

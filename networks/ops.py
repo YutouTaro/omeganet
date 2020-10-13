@@ -16,8 +16,8 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
-import tensorflow.contrib.slim as slim
-
+# import tensorflow.contrib.slim as slim
+import tf_slim as slim
 import tensorflow as tf
 
 
