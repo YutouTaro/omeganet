@@ -32,6 +32,7 @@ from networks import complete_network
 from networks import general_network
 from tensorflow.python.util import deprecation
 
+tf.compat.v1.disable_eager_execution()
 # disable future warnings and info messages for this demo
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
