@@ -12,6 +12,8 @@ from tensorflow.python.util import deprecation
 deprecation._PRINT_DEPRECATION_WARNINGS = False
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
+tf.compat.v1.disable_eager_execution()
+
 now = datetime.now(timezone(timedelta(hours=8)))
 timestr = now.strftime("%y%m%d-%H%M%S")
 
