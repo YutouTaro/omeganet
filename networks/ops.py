@@ -34,35 +34,37 @@ def conv2d(
     kernel_size,
     stride,
     normalizer_fn=slim.batch_norm,
-    activation_fn=tf.nn.relu,
+    activation_fn=tf.keras.activations.relu, #tf.nn.relu,
     weights_regularizer=tf.keras.regularizers.l2(0.5 * (0.0001)),
     normalizer_params=True,
     padding=(1, 1),
     reflect=True,
-    rate=1,
+    rate=1, # TODO is rate or dilation_rate an int or a tuple?
 ):
 
-    if rate > 1:
-        w_pad, h_pad = (rate, rate)
-    else:
-        w_pad, h_pad = tuple(padding)
+    # if rate > 1:
+    #     w_pad, h_pad = (rate, rate)
+    # else:
+    #     w_pad, h_pad = tuple(padding)
 
-    if reflect:
-        inputs = tf.pad(
-            tensor=inputs, paddings=[[0, 0], [h_pad, h_pad], [w_pad, w_pad], [0, 0]], mode="REFLECT"
-        )
+    # if reflect:
+        # inputs = tf.pad(
+        #     tensor=inputs, paddings=[[0, 0], [h_pad, h_pad], [w_pad, w_pad], [0, 0]], mode="REFLECT"
+        # )
+    print("num_outputs: {}\n".format(num_outputs))
 
-    return tf.contrib.layers.conv2d(
-        inputs,
-        num_outputs,
-        kernel_size,
-        stride,
+    # return tf.contrib.layers.conv2d(
+    return tf.keras.layers.Conv2D(
+        # inputs,
+        filters=num_outputs,
+        kernel_size=kernel_size,
+        strides=stride,
         padding="VALID",
-        normalizer_fn=normalizer_fn,
-        activation_fn=activation_fn,
-        weights_regularizer=weights_regularizer,
-        normalizer_params=normalizer_params,
-        rate=rate,
+        # normalizer_fn=normalizer_fn,
+        activation=activation_fn,
+        kernel_regularizer=weights_regularizer,
+        # normalizer_params=normalizer_params,
+        dilation_rate=rate,
     )
 
 

@@ -130,29 +130,31 @@ def _estimate_intrinsics(bottleneck, image_width, image_height):
     with tf.compat.v1.variable_scope("intrinsics"):
         bottleneck = tf.reduce_mean(input_tensor=bottleneck, axis=[1, 2], keepdims=True)
         focal_lengths = tf.squeeze(
-            tf.contrib.layers.conv2d(
-                bottleneck,
-                2,
-                [1, 1],
+            # tf.contrib.layers.conv2d(
+            tf.keras.layers.Conv2D(
+                # bottleneck,
+                filters=2,
+                kernel_size=[1, 1],
                 stride=1,
-                activation_fn=tf.nn.softplus,
-                weights_regularizer=None,
-                scope="foci",
+                activation=tf.nn.softplus, # activation_fn
+                kernel_regularizer=None, # weights_regularizer=None,
+                # scope="foci",
             ),
             axis=(1, 2),
         ) * tf.cast(tf.convert_to_tensor(value=[[image_width, image_height]]), dtype=tf.float32)
 
         offsets = (
             tf.squeeze(
-                tf.contrib.layers.conv2d(
-                    bottleneck,
+                # tf.contrib.layers.conv2d(
+                tf.keras.layers.Conv2D(
+                    # bottleneck,
                     2,
                     [1, 1],
                     stride=1,
-                    activation_fn=None,
-                    weights_regularizer=None,
-                    biases_initializer=None,
-                    scope="offsets",
+                    activation=None, # activation_fn
+                    kernel_regularizer=None, # weights_regularizer=None,
+                    bias_initializer=None, # biases_initializer=None,
+                    # scope="offsets",
                 ),
                 axis=(1, 2),
             )
